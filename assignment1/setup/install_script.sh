@@ -15,9 +15,9 @@ sudo useradd todoapp -p "P@ssw0rd"
 sudo usermod -aG wheel todoapp
 sudo su - todoapp
 
-#mkdir /home/todoapp/app
-#sudo chown todoapp /home/todoapp/app
-#cd /home/todoapp/app
+sudo mkdir /home/todoapp/app
+sudo chown todoapp /home/todoapp/app
+cd /home/todoapp/app
 sudo git clone https://github.com/timoguic/ACIT4640-todo-app.git /home/todoapp/app
 sudo chmod 755 /home/todoapp/app
 sudo npm install --prefix /home/todoapp/app
@@ -36,12 +36,18 @@ sudo systemctl start nginx
 sudo cp /home/admin/setup/nginx.conf /etc/nginx/
 sudo systemctl restart nginx
 
-sudo chmod 755 /home/todoapp/app/public/index.html
 sudo chmod 755 /home/todoapp
+sudo chmod 755 /home/todoapp/app/public/index.html
+
+#selinux
+sudo setenforce 0
 
 #daemon
 sudo cp /home/admin/setup/todoapp.service /etc/systemd/system/
 sudo systemctl daemon-reload
+
 sudo systemctl enable todoapp
 sudo systemctl start todoapp
+
 sudo systemctl restart nginx
+sudo systemctl restart todoapp
