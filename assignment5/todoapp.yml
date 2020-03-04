@@ -1,0 +1,178 @@
+---
+- hosts: all
+  vars:
+    todo_user: todoapp
+    mongo_instance_name: ACIT4640
+  tasks:
+    - name: Add a user todoapp
+      become: true
+      user:
+        name: todoapp
+        password: "{{ 'P@ssw0rd' | password_hash('sha512') }}"
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+    
+    # - name: Enable no password for all sudoers
+    #   become: true
+    #   shell: sed -r -i "s/^(%wheel\s+ALL=\(ALL\)\s+)(ALL)$/\1NOPASSWD: ALL/" /etc/sudoers
+
+    - name: Ensures git is installed
+      become: yes
+      package:
+        name: git
+        state: installed
+
+    - name: Ensures node is installed
+      become: yes
+      package:
+        name: nodejs
+        state: installed
+    
+    - name: Ensures mongodb-server is installed
+      become: yes
+      package:
+        name: mongodb-server
+        state: installed
+    
+    - name: Ensures mongodb is installed
+      become: yes
+      package:
+        name: mongodb
+        state: installed
+    
+    - name: Ensures the mongod service enabled
+      become: true
+      shell: systemctl enable mongod
+
+    - name: Ensures the mongod service is running
+      become: true
+      shell: systemctl start mongod
+
+    
+
+    - name: Ensures NGINX is installed
+      become: yes
+      package:
+        name: nginx
+        state: installed
+
+    - name: Ensures the nginx service is enabled
+      become: true
+      shell: systemctl enable nginx
+
+    - name: Ensures the nginx service is running
+      become: true
+      shell: systemctl start nginx
+
+    - name: Fetch the todoapp file that requires authentication username/password
+      become: true
+      become_user: todoapp
+      get_url:
+        url: https://acit4640.y.vu/docs/module06/resources/mongodb_ACIT4640.tgz
+        dest: /home/todoapp
+        username: BCIT
+        password: w1nt3r2020
+
+    - name: Unzip mongodb_ACIT4640 folder
+      become: true
+      become_user: todoapp
+      unarchive:
+        src: /home/todoapp/mongodb_ACIT4640.tgz
+        dest: /home/todoapp/
+        remote_src: yes
+        # force: yes
+    
+    # - name: restoring the database
+    #   become: yes
+    #   become_user: todoapp
+    #   shell: mongorestore -d acit4640 ./ACIT4640
+    - name: Mongo restore
+      become: yes
+      command: mongorestore -d acit4640 ACIT4640/
+      args:
+        chdir: /home/todoapp
+    
+    - name: Clone app folder
+      become: true
+      become_user: todoapp
+      git:
+        repo: https://github.com/timoguic/ACIT4640-todo-app.git
+        dest: /home/todoapp/app
+        clone: yes
+        force: yes
+
+    - name: Change directory to app folder
+      become: yes
+      become_user: todoapp
+      shell: cd /home/todoapp/app
+
+    - name: copy database.js file to VM
+      become: true
+      copy:
+        src: ./files/database.js
+        dest: /home/todoapp/app/config/
+
+    - name: template the todoapp.service to VM
+      become: true
+      copy:
+        src: ./files/todoapp.service
+        dest: /etc/systemd/system/todoapp.service
+    
+    - name: Ensures the todoapp daemon is reloaded
+      become: true
+      shell: systemctl daemon-reload
+
+    - name: Ensures the todo service is enabled
+      become: true
+      shell: systemctl enable todoapp
+
+    - name: Ensures the todo service is running
+      become: true
+      shell: systemctl start todoapp
+
+    - name: Change of moderator of the todoapp folder
+      become: true
+      file:
+        path: /home/todoapp
+        owner: todoapp
+        mode: "755"
+
+    - name: Change of moderator of the app folder
+      become: yes
+      become_user: todoapp
+      file:
+        path: /home/todoapp/app
+        owner: todoapp
+        mode: "755"
+
+    - name: Install NPM prefix in the app folder
+      become: yes
+      become_user: todoapp
+      shell: npm install --prefix /home/todoapp/app
+
+    - name: Add firewall port
+      become: true
+      shell: firewall-cmd --zone=public --add-port=8080/tcp
+      # firewalld:
+      #   port: 8080/tcp
+      #   zone: public
+      #   permanent: yes
+      #   state: enabled
+
+    
+    
+    - name: copy nginx.conf file to VM
+      become: yes
+      copy:
+        src: ./files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+
+    - name: Ensures the nginx service is restarted
+      become: true
+      shell: systemctl restart nginx
+
+    - name: Ensures the todoapp service is restarted
+      become: true
+      shell: systemctl restart todoapp.service
