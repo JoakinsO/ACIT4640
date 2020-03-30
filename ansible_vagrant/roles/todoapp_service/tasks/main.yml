@@ -1,0 +1,23 @@
+---
+# tasks file for roles/todoappservice
+
+- name: provision the todoapp service file
+  become: yes
+  template:
+    src: todoapp_service.j2
+    dest: /etc/systemd/system/todoapp.service
+
+- name: start todoapp service
+  become: yes
+  systemd:
+    name: todoapp.service
+    state: started
+
+- name: restart nginx service
+  become: yes
+  systemd:
+    name: nginx
+    state: restarted
+
+
+  

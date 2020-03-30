@@ -1,0 +1,14 @@
+---
+- name : Add a user todoapp
+  become: yes
+  user:
+    name: todoapp
+    password: "{{ 'P@ssw0rd' | password_hash('sha512') }}"
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+
+- name: Add tcp port to firewall settings
+  become: yes
+  shell: firewall-cmd --zone=public --add-port=8080/tcp

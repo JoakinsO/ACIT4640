@@ -1,0 +1,21 @@
+---
+# tasks file for roles/nginx
+- name: install nginx
+  become: yes
+  package:
+    name: nginx
+    state: installed
+
+- name: start nginx service
+  become: yes
+  systemd:
+    name: nginx
+    state: started
+
+- name: provision the nginx config file
+  become: yes
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  # notify: restarted nginx
+
