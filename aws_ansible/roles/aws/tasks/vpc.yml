@@ -1,4 +1,5 @@
 ---
+
 - name: provision the VPC
   ec2_vpc_net:
     state: present

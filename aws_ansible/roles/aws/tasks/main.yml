@@ -3,11 +3,3 @@
 - import_tasks: ec2.yml
 - import_tasks: info.yml
 
-- name: provision the VPC
-  ec2_vpc_net:
-    state: present
-    cidr_block: "{{ vpc_cidr }}"
-    region: "{{ aws_region }}"
-    multi_ok: no
-    name: "{{ vpc_prefix }}_VPC"
-  register: vpc_data
