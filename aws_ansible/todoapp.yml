@@ -5,14 +5,14 @@
 
   # roles:
   #   - aws
-  tasks:
-    - name: defining role
-      include_role: 
-        name: aws
+ 
+    # - name: defining role
+  roles: 
+    - role: aws
       tags:
         - provision
         # - deployment
-    
+  tasks:
     - name: ignore info file when provisioning
       import_role:
         name: aws
