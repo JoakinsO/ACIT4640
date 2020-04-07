@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  # roles:
+  #   - aws
+  tasks:
+    - name: defining role
+      include_role: 
+        name: aws
+      tags:
+        - provision
+        # - deployment
+    
+    - name: ignore info file when provisioning
+      import_role:
+        name: aws
+        tasks_from: info
+      tags:
+        - info
+        - never
+    
+#     - name: defining role
+#       include_role: 
+#         name: aws
+#         tasks_from: ec2
+#       tags:
+#         - cleanup
+#         - never
+# - hosts: aws_ec2
+#   tasks:
+#     - name: install nginx 
+    
+    
+ 
+
+
+
+
+
+    

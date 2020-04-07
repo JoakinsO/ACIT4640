@@ -1,0 +1,65 @@
+---
+- name: Setting up the route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc_data.vpc.id }}"
+    region: "{{ aws_region }}"
+    tags:
+      Name: "{{ vpc_prefix }}_route_table"
+    subnets:
+      - "{{ subnet_data.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw_data.gateway_id }}"
+  register: public_route_table
+
+- name: create ec2 security group
+  ec2_group:
+    name: "{{ vpc_prefix }}_SG"
+    description: SG with rule descriptions
+    vpc_id: "{{ vpc_data.vpc.id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "{{ secgroup_ssh_allowed_home_cidr }}"
+
+- name: create ec2 instance
+  ec2:
+    key_name: aws_private_key
+    instance_type: t2.micro
+    image: ami-01ed306a12b7d1c96
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: standard
+        volume_size: 8
+    region: "{{ aws_region }}"
+    group: "{{ vpc_prefix }}_SG"
+    zone: "{{ availability_zone }}"
+    exact_count: 1
+    count_tag:
+      Name: "{{ ec2_instance_name }}"
+    vpc_subnet_id: "{{ subnet_data.subnet.id }}"
+    assign_public_ip: yes
+
+    instance_tags:
+        Name: "{{ ec2_instance_name }}"
+    wait: yes
+  register: ec2_instance
+
+
+- name: associate an elastic IP with an instance
+  ec2_eip:
+    device_id: "{{ ec2_instance.instances[0].id }}"
+    reuse_existing_ip_allowed: true
+    release_on_disassociation: true
+    region: "{{ aws_region }}"
+    in_vpc: yes
+  register: elastic_ip
+
+- name: refresh Ansible inventory
+  meta: refresh_inventory

@@ -1,0 +1,7 @@
+#
+vpc_cidr: 10.46.0.0/16
+aws_region: us-west-2
+availability_zone: us-west-2a
+vpc_prefix: ACIT4640-Provisioning
+ec2_instance_name: ACIT4640-CentOS-7
+secgroup_ssh_allowed_home_cidr: 192.168.0.0/16

@@ -1,0 +1,31 @@
+---
+- name: provision the VPC
+  ec2_vpc_net:
+    state: present
+    cidr_block: "{{ vpc_cidr }}"
+    region: "{{ aws_region }}"
+    multi_ok: no
+    name: "{{ vpc_prefix }}_VPC"
+  register: vpc_data
+
+- name: Create a subnet
+  ec2_vpc_subnet:
+    state: present
+    region: "{{ aws_region }}"
+    az: "{{ availability_zone }}"
+    cidr: 10.46.42.0/24
+    vpc_id: "{{ vpc_data.vpc.id }}"
+    tags: 
+      Name: "{{ vpc_prefix }}_subnet"
+  register: subnet_data
+
+- name: Create an internet gateway
+  ec2_vpc_igw:
+    state: present
+    region: "{{ aws_region }}"
+    vpc_id: "{{ vpc_data.vpc.id }}"
+    tags: 
+      Name: "{{ vpc_prefix }}_gateway"
+  register: igw_data
+
+
