@@ -1,3 +1,0 @@
----
-- import_tasks: vpc.yml
-- import_tasks: ec2.yml

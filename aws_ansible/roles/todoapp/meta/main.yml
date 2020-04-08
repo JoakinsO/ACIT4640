@@ -1,7 +1,0 @@
----
-dependencies:
-  - nginx
-  - git
-  - node
-  - mongodb-server
-  - todoapp_service

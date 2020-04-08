@@ -1,8 +1,0 @@
----
-# handlers file for roles/todoappservice
-
-- name: restarts todoapp service
-  become: yes
-  systemd:
-    name: todoapp.service
-    state: restarted
