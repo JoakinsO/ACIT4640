@@ -20,17 +20,16 @@
       tags:
         - info
         - never
-    
-#     - name: defining role
-#       include_role: 
-#         name: aws
-#         tasks_from: ec2
-#       tags:
-#         - cleanup
-#         - never
-# - hosts: aws_ec2
-#   tasks:
-#     - name: install nginx 
+
+- hosts: aws_ec2
+  gather_facts: False
+  roles: 
+    - role: todoapp
+      tags:
+        - deployment
+  # tasks:
+    # - name: install nginx 
+
     
     
  

@@ -1,21 +1,24 @@
 ---
-- name: print vpc data from AWS module
-  debug:
-    msg: "{{ vpc_data}}"
-
-- name: print subnet data from AWS module
-  debug:
-    msg: "{{ subnet_data}}"
+- name: ec2 instance information
+  action: ec2_instance_info
+  register: ec2_instance
   
-- name: print internet gateway data from AWS module
-  debug:
-    msg: "{{ igw_data }}"
-
 - name: print ec2 instance data from AWS module
   debug:
-    msg: "{{ ec2_instance }}"
+    msg: "{{ ec2_instance}}"
+      
+# - name: print vpc data from AWS module
+#   debug:
+#     msg: "{{ vpc_data}}"
 
-- name: ec2 instance information
-  ec2_instance_info:
-    instance_ids:
-      - "{{ ec2_instance.instances[0].id }}"
+# - name: print subnet data from AWS module
+#   debug:
+#     msg: "{{ subnet_data}}"
+  
+# - name: print internet gateway data from AWS module
+#   debug:
+#     msg: "{{ igw_data }}"
+
+# - name: print ec2 instance data from AWS module
+#   debug:
+#     msg: "{{ ec2_instance }}"

@@ -55,6 +55,7 @@
 - name: associate an elastic IP with an instance
   ec2_eip:
     device_id: "{{ ec2_instance.instances[0].id }}"
+    allow_reassociation: yes
     reuse_existing_ip_allowed: true
     release_on_disassociation: true
     region: "{{ aws_region }}"

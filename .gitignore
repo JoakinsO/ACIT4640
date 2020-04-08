@@ -1,2 +1,6 @@
 /module05/isos/CentOS-7-x86_64-Minimal-1908.iso
-/ansible_vagrant/base_4640.box
+/assignment5/base_4640.box
+/aws_ansible/aws_access_keys
+/aws_ansible/aws_private_key
+/module05/packer
+/module05/packer_cache
